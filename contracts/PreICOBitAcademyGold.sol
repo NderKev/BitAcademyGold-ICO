@@ -14,7 +14,7 @@ import "./BitAcademyToken.sol";
  * the methods to add functionality. Consider using 'super' where appropiate to concatenate
  * behavior.
  */
-contract ICONormalKYCNoRefund is Ownable{
+contract PreICOBitAcademyGold is Ownable{
   using SafeMath for uint256;
 
   // The token being sold
@@ -39,9 +39,6 @@ contract ICONormalKYCNoRefund is Ownable{
 
   // Remaining tokens which are yet to be sold
   uint256 public remainingTokens;
-
-  // Tokens sold excluding bonus
-  uint256 public tokenSoldExcludeBonus;
 
   /**
    * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
@@ -93,6 +90,7 @@ contract ICONormalKYCNoRefund is Ownable{
     tokenHolder = _tokenHolder;
     openingTime = _openingTime;
     closingTime = _closingTime;
+    owner = msg.sender;
     remainingTokens = token.totalSupply();
   }
 
@@ -141,6 +139,7 @@ contract ICONormalKYCNoRefund is Ownable{
     );
 
     _updatePurchasingState(_beneficiary, weiAmount);
+
     _forwardFunds();
     _postValidatePurchase(_beneficiary, weiAmount);
   }
@@ -274,5 +273,9 @@ contract ICONormalKYCNoRefund is Ownable{
    */
   function _forwardFunds() internal {
     wallet.transfer(msg.value);
+  }
+
+  function setRate(uint256 _rate) public onlyOwner{
+    rate = _rate;
   }
 }
