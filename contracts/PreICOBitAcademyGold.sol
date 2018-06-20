@@ -40,6 +40,9 @@ contract PreICOBitAcademyGold is Ownable{
   // Remaining tokens which are yet to be sold
   uint256 public remainingTokens;
 
+  // Mapping to check if minimum contribution is done by user
+  mapping (address => bool) public isMinimumContributed;
+
   /**
    * @dev Reverts if beneficiary is not whitelisted. Can be used when extending this contract.
    */
@@ -196,6 +199,9 @@ contract PreICOBitAcademyGold is Ownable{
   {
     require(_beneficiary != address(0));
     require(_weiAmount != 0);
+    if(isMinimumContributed[msg.sender] == false) {
+      require(msg.value >= 10**18);
+    }
   }
 
   /**
@@ -223,7 +229,7 @@ contract PreICOBitAcademyGold is Ownable{
   )
     internal
   {
-    token.transferFrom(tokenHolder,_beneficiary, _tokenAmount);
+    token.transferFrom(tokenHolder,_beneficiary, _tokenAmount.mul(10**(token.decimals())));
   }
 
   /**
@@ -241,6 +247,9 @@ contract PreICOBitAcademyGold is Ownable{
   {
     _deliverTokens(_beneficiary, _tokenAmount);
     remainingTokens = remainingTokens.sub(_tokenAmount);
+    if(isMinimumContributed[msg.sender] != true){
+      isMinimumContributed[msg.sender] = true;
+    }
   }
 
   /**
